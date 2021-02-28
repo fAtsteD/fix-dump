@@ -5,36 +5,29 @@ import sys
 
 def filter(path: str, old_domain: str, new_domain: str):
     '''
-    First method find name of percentage in file and replace its.
-
-    File always (maybe not) have '%postname%'. But in the dump file it is like '{something}postname{something}'.
-    Filter go through file two times.
+    Find old domain and change to new.
+    It has filter for serialized php object. It uses its first.
     '''
 
-    # Check if we have file
-    if not os.path.isfile(path):
-        print('File path {} does not exist.'.format(path))
-        return
-
     # Open file for changing
-    fread = open(path, 'r', encoding='utf8')
+    fread = open(path, 'r', encoding='ISO-8859-1')
 
     # New data
     new_content = ''
 
     # Change domain
     for line in fread:
-        new_content += _search_domain(line, old_domain, new_domain)
+        new_content += change_domain(line, old_domain, new_domain)
 
     fread.close()
 
     # Write changing
-    with open(path, 'w', encoding='utf8') as fwrite:
+    with open(path, 'w', encoding='ISO-8859-1') as fwrite:
         fwrite.writelines(new_content)
         fwrite.close()
 
 
-def _search_domain(text: str, old_domain: str, new_domain: str) -> str:
+def change_domain(text: str, old_domain: str, new_domain: str) -> str:
     '''
     Search domain in text and replace
     '''

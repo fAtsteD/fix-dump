@@ -2,31 +2,32 @@ import os
 import re
 import sys
 
-# Special word for finding percentage
-special_word = 'postname'
-
-# Code for percentage symbol when find its
-percentage_symbol = ''
-
 
 def filter(path: str):
     '''
-    First method find name of percentage in file and replace its.
+    Find percentage text and change them to the symbol percent
 
     File always (maybe not) have '%postname%'. But in the dump file it is like '{something}postname{something}'.
     Filter go through file two times.
     '''
+
+    # Special word for finding percentage
+    special_word = 'postname'
+
+    # Code for percentage symbol when find its
+    percentage_symbol = ''
 
     # Check if we have file
     if not os.path.isfile(path):
         print('File path {} does not exist.'.format(path))
         return
 
-    fread = open(path, 'r', encoding='utf8')
+    fread = open(path, 'r', encoding='ISO-8859-1')
 
     # Search percantage text
     for line in fread:
-        if _find_percentage(line):
+        percentage_symbol = _find_percentage(line, special_word)
+        if percentage_symbol != '':
             break
 
     # File is not changed if nothing found
@@ -40,33 +41,45 @@ def filter(path: str):
     # Replaced text
     new_text = ''
     for line in fread:
-        new_text += line.replace(percentage_symbol, '%')
+        new_text += change_percentage_symbol(line,
+                                             percentage_symbol, special_word)
 
     fread.close()
 
     # Open file and write data
-    with open(path, 'w', encoding='utf8') as fwrite:
+    with open(path, 'w', encoding='ISO-8859-1') as fwrite:
         fwrite.writelines(new_text)
         fwrite.close()
 
 
-def _find_percentage(text: str) -> str:
+def _find_percentage(text: str, special_word: str) -> str:
     '''
     Find text that corresponds to the symbol of percentage.
     Return percentage symbol or empty text
     '''
 
-    global percentage_symbol
-
     match = re.search(
         '(\{[^\{^\}]+\})(' + special_word + ')(\{[^\{^\}]+\})', text)
 
     if not match:
-        return False
+        return ''
 
-    percentage_symbol = match.group(1)
+    return match.group(1)
 
-    return True
+
+def change_percentage_symbol(text: str, percentage_symbol='', special_word='postname'):
+    '''
+    Find percentage symbol (or use setted) and replace its.
+    '''
+    # For not setted percentage text
+    if percentage_symbol == '':
+        percentage_symbol = _find_percentage(text, special_word)
+
+    # Second check if nothing found, return not changed
+    if percentage_symbol == '':
+        return text
+
+    return text.replace(percentage_symbol, '%')
 
 
 if __name__ == '__main__':
