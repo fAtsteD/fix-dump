@@ -1,8 +1,8 @@
 import os
 import sys
 
-from filters.domain import filter as filter_domain
-from filters.percentage import filter as filter_percentage
+from filters.domain import filter_text as filter_domain
+from filters.percentage import filter_text as filter_percentage
 
 
 def main():
@@ -20,7 +20,7 @@ def main():
     # Check if we have file
     if not os.path.isfile(file_path):
         print('File path {} does not exist.'.format(file_path))
-        return
+        sys.exit()
 
     # For filter domain
     if len(sys.argv) < 4:
@@ -30,9 +30,18 @@ def main():
     old_domain = sys.argv[2]
     new_domain = sys.argv[3]
 
+    content = ''
+    with open(file_path, 'r', encoding='ISO-8859-1') as fread:
+        content += fread.read()
+        fread.close()
+
     # Accept filters
-    filter_percentage(file_path)
-    filter_domain(file_path, old_domain, new_domain)
+    content = filter_percentage(content)
+    content = filter_domain(content, old_domain, new_domain)
+
+    with open(file_path, 'w', encoding='ISO-8859-1') as fwrite:
+        fwrite.write(content)
+        fwrite.close()
 
 
 if __name__ == '__main__':

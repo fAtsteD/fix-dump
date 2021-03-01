@@ -3,11 +3,16 @@ import re
 import sys
 
 
-def filter(path: str, old_domain: str, new_domain: str):
+def filter_file(path: str, old_domain: str, new_domain: str):
     '''
     Find old domain and change to new.
     It has filter for serialized php object. It uses its first.
     '''
+
+    # Check if we have file
+    if not os.path.isfile(path):
+        print('File path {} does not exist.'.format(path))
+        return
 
     # Open file for changing
     fread = open(path, 'r', encoding='ISO-8859-1')
@@ -17,7 +22,7 @@ def filter(path: str, old_domain: str, new_domain: str):
 
     # Change domain
     for line in fread:
-        new_content += change_domain(line, old_domain, new_domain)
+        new_content += filter_text(line, old_domain, new_domain)
 
     fread.close()
 
@@ -27,7 +32,7 @@ def filter(path: str, old_domain: str, new_domain: str):
         fwrite.close()
 
 
-def change_domain(text: str, old_domain: str, new_domain: str) -> str:
+def filter_text(text: str, old_domain: str, new_domain: str) -> str:
     '''
     Search domain in text and replace
     '''

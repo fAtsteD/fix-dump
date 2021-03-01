@@ -3,7 +3,7 @@ import re
 import sys
 
 
-def filter(path: str):
+def filter_file(path: str):
     '''
     Find percentage text and change them to the symbol percent
 
@@ -41,8 +41,8 @@ def filter(path: str):
     # Replaced text
     new_text = ''
     for line in fread:
-        new_text += change_percentage_symbol(line,
-                                             percentage_symbol, special_word)
+        new_text += filter_text(line,
+                                percentage_symbol, special_word)
 
     fread.close()
 
@@ -67,7 +67,7 @@ def _find_percentage(text: str, special_word: str) -> str:
     return match.group(1)
 
 
-def change_percentage_symbol(text: str, percentage_symbol='', special_word='postname'):
+def filter_text(text: str, percentage_symbol='', special_word='postname'):
     '''
     Find percentage symbol (or use setted) and replace its.
     '''
