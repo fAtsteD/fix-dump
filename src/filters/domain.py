@@ -38,7 +38,7 @@ def filter_text(text: str, old_domain: str, new_domain: str) -> str:
     '''
 
     # Special pattern for searching in serialized php
-    serialized_pattern = "s:([0-9]{2,3}):(\\\\\"[^\\\"]+" + \
+    serialized_pattern = "s:([0-9]{2,3}):(\\\\\"[^\\\"]*" + \
         re.escape(old_domain) + "[^\\\"]+\\\\\")"
 
     def match_serialized_pattern(matchobject):
