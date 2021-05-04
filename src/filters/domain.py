@@ -47,7 +47,7 @@ def filter_text(text: str, old_domain: str, new_domain: str) -> str:
         Change matched data with new domain with rules for serialized php
         '''
         # For serialized str
-        if matchobject.group(1) != "":
+        if matchobject.group(1) is not None:
             return 's:' + str(int(matchobject.group(2)) + len(new_domain) - len(old_domain)
                               ) + ':' + matchobject.group(3).replace(old_domain, new_domain)
 
