@@ -38,21 +38,23 @@ def filter_text(text: str, old_domain: str, new_domain: str) -> str:
     '''
 
     # Special pattern for searching in serialized php
-    serialized_pattern = "s:([0-9]{2,3}):(\\\\\"[^\\\"]*" + \
-        re.escape(old_domain) + "[^\\\"]+\\\\\")"
+    serialized_pattern = "(s:([0-9]*):(\\\\\"[^\\\"]*" + \
+        re.escape(old_domain) + "[^\\\"]+\\\\\"))|(" + \
+        re.escape(old_domain) + ")"
 
     def match_serialized_pattern(matchobject):
         '''
         Change matched data with new domain with rules for serialized php
         '''
-        return 's:' + str(int(matchobject.group(1)) + len(new_domain) - len(old_domain)
-                          ) + ':' + matchobject.group(2).replace(old_domain, new_domain)
+        # For serialized str
+        if matchobject.group(1) != "":
+            return 's:' + str(int(matchobject.group(2)) + len(new_domain) - len(old_domain)
+                              ) + ':' + matchobject.group(3).replace(old_domain, new_domain)
 
-    # Apply serialized pattern
+        # For regular srg
+        return matchobject.group(4).replace(old_domain, new_domain)
+
     text = re.sub(serialized_pattern, match_serialized_pattern, text)
-
-    # Apply regula pattern
-    text = re.sub(old_domain, new_domain, text)
 
     return text
 
